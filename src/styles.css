@@ -1,0 +1,423 @@
+/* ========================================
+   ASTROLOGY CHAT — MODERN DESIGN
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+/* ---- Keyframes ---- */
+@keyframes bubbleInFromLeft {
+  0%   { opacity: 0; transform: translateX(-14px) translateY(10px) scale(0.92); }
+  65%  { transform: translateX(3px) translateY(-2px) scale(1.02); }
+  100% { opacity: 1; transform: translateX(0) translateY(0) scale(1); }
+}
+
+@keyframes bubbleInFromRight {
+  0%   { opacity: 0; transform: translateX(14px) translateY(10px) scale(0.92); }
+  65%  { transform: translateX(-3px) translateY(-2px) scale(1.02); }
+  100% { opacity: 1; transform: translateX(0) translateY(0) scale(1); }
+}
+
+@keyframes typingBounce {
+  0%, 57%, 100% { transform: translateY(0);    opacity: 0.4; }
+  28%           { transform: translateY(-7px); opacity: 1;   }
+}
+
+@keyframes nebulaPulse {
+  0%   { opacity: 0.75; transform: scale(1);    }
+  50%  { opacity: 1;    transform: scale(1.08) translate(1%, 1.5%); }
+  100% { opacity: 0.75; transform: scale(1);    }
+}
+
+@keyframes botGlow {
+  0%, 100% { box-shadow: 0 4px 24px rgba(108, 46, 185, 0.25), 0 0  0px rgba(212, 175, 55, 0);    }
+  50%       { box-shadow: 0 4px 24px rgba(108, 46, 185, 0.35), 0 0 22px rgba(212, 175, 55, 0.12); }
+}
+
+@keyframes avatarPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+  50%       { box-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
+}
+
+:root {
+  --astro-bg: #0a0118;
+  --astro-bg2: #110228;
+  --astro-purple: #6c2eb9;
+  --astro-purple-light: #9b59d0;
+  --astro-gold: #d4af37;
+  --astro-gold-light: #f0d060;
+  --astro-user-bg: #1e0a3c;
+  --astro-user-border: #6c2eb9;
+  --astro-bot-bg: #160630;
+  --astro-bot-border: #d4af37;
+  --astro-text: #f0e6ff;
+  --astro-text-muted: #b89dcc;
+  --astro-input-bg: #1a0735;
+  --astro-input-border: #5a2090;
+  --astro-radius: 18px;
+  --astro-shadow: 0 4px 24px rgba(108, 46, 185, 0.25);
+}
+
+/* ---- Base ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--astro-bg);
+  font-family: 'Space Grotesk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--astro-text);
+}
+
+/* Subtle colour tint behind the canvas starfield */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse at 20% 35%, rgba(108, 46, 185, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 78% 68%, rgba(212, 175, 55, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- App Shell ---- */
+.astro-app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---- Header ---- */
+.astro-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 16px 16px;
+  background: linear-gradient(180deg, rgba(17, 2, 40, 0.95) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.astro-banner {
+  max-height: 80px;
+  width: auto;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.4));
+}
+
+/* ---- Chat container ---- */
+.astro-chat-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.astro-chat-inner {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---- Chat row ---- */
+.chat-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  width: 100%;
+}
+
+.chat-row--bot {
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.chat-row--user {
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+/* ---- Avatars ---- */
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(212, 175, 55, 0.5);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  animation: avatarPulse 3s ease-in-out infinite;
+}
+
+.avatar--bot {
+  background: var(--astro-bg2);
+  border-color: var(--astro-gold);
+}
+
+.avatar--bot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar--user {
+  background: var(--astro-user-bg);
+  border-color: var(--astro-purple-light);
+  font-size: 22px;
+}
+
+/* ---- Bubble wrapper ---- */
+.bubble-wrapper {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+}
+
+.bubble-wrapper--bot {
+  justify-content: flex-start;
+}
+
+.bubble-wrapper--user {
+  justify-content: flex-end;
+}
+
+/* ---- Bubble ---- */
+.bubble {
+  position: relative;
+  padding: 12px 16px;
+  border-radius: var(--astro-radius);
+  max-width: 85%;
+  font-size: 15px;
+  line-height: 1.5;
+  word-break: break-word;
+  box-shadow: var(--astro-shadow);
+}
+
+.bubble--bot {
+  background: var(--astro-bot-bg);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: var(--astro-text);
+  border-bottom-left-radius: 4px;
+  animation: bubbleInFromLeft 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both, botGlow 4s ease-in-out 0.5s infinite;
+}
+
+.bubble--typing {
+  animation: bubbleInFromLeft 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both !important;
+}
+
+.bubble--user {
+  background: linear-gradient(135deg, #2d0a5a 0%, #1e0a3c 100%);
+  border: 1px solid rgba(108, 46, 185, 0.5);
+  color: var(--astro-text);
+  border-bottom-right-radius: 4px;
+  animation: bubbleInFromRight 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ---- Bubble tails (BD style) ---- */
+.bubble-tail {
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+}
+
+.bubble-tail--bot {
+  left: -10px;
+  border-top: 10px solid transparent;
+  border-right: 10px solid var(--astro-bot-bg);
+  border-bottom: 0;
+  filter: drop-shadow(-1px 0 0 rgba(212, 175, 55, 0.25));
+}
+
+.bubble-tail--user {
+  right: -10px;
+  border-top: 10px solid transparent;
+  border-left: 10px solid #2d0a5a;
+  border-bottom: 0;
+  filter: drop-shadow(1px 0 0 rgba(108, 46, 185, 0.5));
+}
+
+/* ---- Inputs ---- */
+.input-group-astro {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.astro-input,
+.astro-textarea {
+  background: var(--astro-input-bg);
+  border: 1px solid var(--astro-input-border);
+  border-radius: 10px;
+  color: var(--astro-text);
+  padding: 10px 14px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  resize: none;
+  font-family: inherit;
+}
+
+.astro-input:focus,
+.astro-textarea:focus {
+  border-color: var(--astro-purple-light);
+  box-shadow: 0 0 0 3px rgba(108, 46, 185, 0.2);
+}
+
+.astro-input::placeholder,
+.astro-textarea::placeholder {
+  color: var(--astro-text-muted);
+}
+
+.astro-input--error {
+  border-color: #e05c7a;
+  box-shadow: 0 0 0 3px rgba(224, 92, 122, 0.2);
+}
+
+.astro-input-error {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #e05c7a;
+}
+
+.astro-send-btn {
+  align-self: flex-end;
+  background: linear-gradient(135deg, var(--astro-purple) 0%, var(--astro-gold) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  letter-spacing: 0.3px;
+}
+
+.astro-send-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.astro-send-btn:active {
+  transform: translateY(0);
+}
+
+/* ---- Zodiac selector ---- */
+.zodiac-selector {
+  width: 100%;
+}
+
+.zodiac-label {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--astro-text-muted);
+  font-style: italic;
+}
+
+.zodiac-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.zodiac-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(108, 46, 185, 0.12);
+  border: 1px solid rgba(108, 46, 185, 0.3);
+  border-radius: 12px;
+  color: var(--astro-text);
+  padding: 10px 6px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s, box-shadow 0.2s;
+  font-family: inherit;
+}
+
+.zodiac-btn:hover {
+  background: rgba(108, 46, 185, 0.3);
+  border-color: var(--astro-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+}
+
+.zodiac-btn:active {
+  transform: translateY(0);
+}
+
+.zodiac-emoji {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.zodiac-name {
+  font-size: 11px;
+  color: var(--astro-text-muted);
+  text-align: center;
+}
+
+/* ---- Typing indicator ---- */
+.typing-indicator {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 2px 2px;
+  min-width: 38px;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--astro-gold-light);
+  animation: typingBounce 1.3s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.18s; }
+.typing-dot:nth-child(3) { animation-delay: 0.36s; }
+
+/* ---- Zodiac hover shimmer ---- */
+.zodiac-btn:hover .zodiac-emoji {
+  display: inline-block;
+  animation: none;
+  filter: drop-shadow(0 0 6px var(--astro-gold-light));
+  transition: filter 0.2s;
+}
+
+/* ---- Scroll behaviour ---- */
+.astro-chat-container {
+  scroll-behavior: smooth;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 500px) {
+  .zodiac-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .bubble {
+    max-width: 95%;
+    font-size: 14px;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+}
+
