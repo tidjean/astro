@@ -11,6 +11,9 @@
 /node_modules_legacy_angular
 npm-debug.log
 yarn-error.log
+.env
+.env.local
+.env.*.local
 
 # IDEs and editors
 .idea/
